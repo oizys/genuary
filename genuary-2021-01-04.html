@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Urpflanze | Animations | 01 - Basic prop animation</title>
+    <script src="https://cdn.jsdelivr.net/npm/urpflanze"></script>
+    <style>
+      * {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const scene = new Urpflanze.Scene();
+
+      const shape = new Urpflanze.Rect({
+        repetitions: 10,
+        sideLength: 20,
+        displace: Urpflanze.Animation.uncontrolledLoop({
+	        from: 0,
+	        to: Urpflanze.PI2,
+	        durate: 2000
+	    }),
+        distance: (propArguments) => Urpflanze.relativeClamp(-1, 1, Math.sin(propArguments.time / 1000), 70, 200)
+      });
+
+      const qMirror = (shape, dist) => {
+      	return new Urpflanze.Shape({
+				shape: shape,
+				repetitions: [2],
+				distance: dist * 2,
+				scale: (propArguments) => [propArguments.repetition.col.offset * 2 - 1, propArguments.repetition.row.offset * 2 - 1]
+			})
+      }
+
+      const hMirror = (shape, dist) => {
+      	return new Urpflanze.Shape({
+			shape: shape,
+			repetitions: [1,2],
+			distance: dist * 2,
+			scale: (propArguments) => [propArguments.repetition.offset * 2 - 1, 1]
+		})
+      }
+
+      const vMirror = (shape, dist) => {
+      	return new Urpflanze.Shape({
+			shape: shape,
+			repetitions: [2,1],
+			displace: Urpflanze.PI2,
+			distance: dist * 2,
+			scale: (propArguments) => [1, propArguments.repetition.offset * 2 - 1]
+		})
+      }
+
+      const mirror = qMirror(shape, 80);
+
+      const sq = new Urpflanze.Shape({ 
+      	shape: mirror,
+      	repetitions: [2],
+      	distance: 140,
+      	scale: 0.4
+      })
+
+      scene.add(sq);
+
+      const drawer = new Urpflanze.DrawerCanvas(scene, document.body
+      	, { ghosts: 40, ghostSkipFunction: ghostRepetition => ghostRepetition.index ** 1.9 });
+      drawer.startAnimation(); // <- change draw() to startAnimation()
+    </script>
+  </body>
+</html>
