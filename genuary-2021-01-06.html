@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Urpflanze | Animations | 01 - Basic prop animation</title>
+    <script src="https://cdn.jsdelivr.net/npm/urpflanze"></script>
+    <style>
+      * {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const scene = new Urpflanze.Scene();
+      /*
+      const shape = new Urpflanze.Triangle({
+        repetitions: 12, sideLength: 80,
+        distance: (propArguments) => Urpflanze.relativeClamp(-1, 1, Math.sin(propArguments.time / 1000), 70, 220)
+      });*/
+      const tri = new Urpflanze.Polygon({
+        repetitions: 3, sideLength: 120, sideNumber: 3,
+        distance: args => Math.floor(args.time % 1.2) * 30 + 120,
+        displace: Urpflanze.PI2/12,
+        bUseRecursion: true,
+        bUseParent: true,
+        style: {
+        	fill: args => {
+				const y = args.context.noise('seed', args.repetition.offset*35, 10, args.time / 5000);
+				return `hsla(${y*360}, 100%, 50%, .19)`;
+        	},
+        },
+      });
+
+      const recursion = new Urpflanze.ShapeRecursive({
+				shape: tri,
+				distance: 40,
+				repetitions: 3,
+				recursions: args => (args.repetition.index) % 3 == 0  ? 5 : 3,
+				recursionVertex: 3,
+				recursionScale: 1.19,
+       			displace: Urpflanze.PI2/5,
+				scale: 1.0,
+			});
+
+      scene.add(recursion);
+	  
+      const drawer = new Urpflanze.DrawerCanvas(scene, document.body);
+      const timeline = drawer.getTimeline();
+	  timeline.setFramerate(2);
+      drawer.startAnimation();
+    </script>
+  </body>
+</html>
